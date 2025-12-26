@@ -1,0 +1,79 @@
+{
+  "pipeline": {
+    "name": "myPipeline",
+    "roleArn": "arn:aws:iam::375810804590:role/CodePipelineRole",
+    "artifactStore": {
+      "type": "S3",
+      "location": "hafsahm.ie"
+    },
+    "stages": [
+      {
+        "name": "Source",
+        "actions": [
+          {
+            "name": "SourceAction",
+            "actionTypeId": {
+              "category": "Source",
+              "owner": "ThirdParty",
+              "provider": "GitHub",
+              "version": "1"
+            },
+            "outputArtifacts": [
+              { "name": "SourceOutput" }
+            ],
+            "configuration": {
+              "Owner": "D00256764",
+              "Repo": "cloud-infra",
+              "Branch": "main",
+              "OAuthToken": "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"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Build",
+        "actions": [
+          {
+            "name": "BuildAction",
+            "actionTypeId": {
+              "category": "Build",
+              "owner": "AWS",
+              "provider": "CodeBuild",
+              "version": "1"
+            },
+            "inputArtifacts": [
+              { "name": "SourceOutput" }
+            ],
+            "outputArtifacts": [
+              { "name": "BuildOutput" }
+            ],
+            "configuration": {
+              "ProjectName": "myBuildProject"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Deploy",
+        "actions": [
+          {
+            "name": "S3Deploy",
+            "actionTypeId": {
+              "category": "Deploy",
+              "owner": "AWS",
+              "provider": "S3",
+              "version": "1"
+             },
+             "inputArtifacts": [
+                {"name": "BuildOutput"}
+            ],
+             "configuration": {
+                "BucketName": "bobstaticweb",
+                "Extract": "true"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
